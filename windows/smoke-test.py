@@ -117,7 +117,8 @@ def frame(connection):
 try:
     runtime = subprocess.check_output([str(PYTHON), "-I", "-c",
         "import sys, socket, ssl, sqlite3, json, http.server, hashlib; print(json.dumps(sys.prefix))"], env=env)
-    assert str(TEST / "runtime").lower() == json.loads(runtime.decode("ascii")).lower()
+    actual_prefix = json.loads(runtime.decode("ascii"))
+    assert os.path.samefile(TEST / "runtime", actual_prefix), (str(TEST / "runtime"), actual_prefix)
     results["relocated_runtime_without_dev_PATH"] = True
     print("Packed Python runtime: OK", flush=True)
     normal, bbsc = launch("normal"), launch("bbsc")
