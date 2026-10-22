@@ -44,3 +44,16 @@ BBSC Relay 是单组玩家共享广播，未提供房间隔离；适用于互相
 shadNet 仅加现有 STUN 兼容修复、启用账号工具的构建目标；BBSC 增加显式 `--shadnet-webapi` 参数，并修正本机登录地址与实际监听地址不一致的问题。
 原作者与第三方许可保留在 `licenses`，BBSC 原始署名同时保留在 `bbsc-game`。
 完整源码包和 Linux 配方与二进制一起提供，详见 https://github.com/ytq77/TheHuntServer 。
+
+## 更新已有 Windows 服务
+
+先让玩家退出，并用 Ctrl+C 停止服务，备份旧目录。将新版本解压到新的目录，再从旧目录复制持久数据：
+
+- 根目录 `server.json`：已选监听地址。不要用新包的回环默认值覆盖它。
+- `normal/shadnet.cfg`、`normal/db/`：普通模式配置与账号。
+- `bbsc/shadnet.cfg`、`bbsc/db/`、`bbsc/online-data.json`：无缝模式配置、账号与在线数据。
+- 如自行修改过各模式的 `worlds.cfg`、`scoreboards.cfg`，一并保留；日志可另外归档。
+
+只复制旧目录中实际存在的上述数据，不复制旧版 exe、runtime 或 bbsc-game。新目录保留新程序和运行库，旧目录留作回滚；不要让两份服务同时占用同一组端口。启动后核对打印地址和已有账号登录，再让两人进入游戏。
+
+服务端账号不是角色存档。迁移服务端不需要把玩家的游戏存档上传到开服电脑。
