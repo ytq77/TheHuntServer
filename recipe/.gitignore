@@ -1,0 +1,6 @@
+.build/
+.env
+shadnet-state/
+game-state/
+backups/
+__pycache__/

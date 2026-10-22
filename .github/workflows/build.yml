@@ -1,0 +1,105 @@
+name: 服务端构建
+
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows:
+    name: Windows 原生构建与回归
+    runs-on: windows-2022
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: msys2/setup-msys2@v2
+        with:
+          msystem: CLANG64
+          update: true
+          install: >-
+            mingw-w64-clang-x86_64-toolchain
+            mingw-w64-clang-x86_64-cmake
+            mingw-w64-clang-x86_64-ninja
+            mingw-w64-clang-x86_64-python
+            mingw-w64-clang-x86_64-qt6-base
+            mingw-w64-clang-x86_64-qt6-websockets
+            mingw-w64-clang-x86_64-qt6-httpserver
+      - name: 编译、测试并打包
+        shell: msys2 {0}
+        run: |
+          set -euo pipefail
+          powershell.exe -NoProfile -ExecutionPolicy Bypass -File windows/build-native.ps1 -Toolchain "$(cygpath -w /clang64)"
+          python scripts/archive-source.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: TheHuntServer-packages
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+      - name: 保留失败诊断
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-diagnostics
+          path: |
+            windows/build/Testing/Temporary/LastTest.log
+            windows/smoke-results.json
+          retention-days: 7
+
+  linux:
+    name: Linux 配方构建与协议回归
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      TEST_SERVER_IP: 100.64.0.10
+    steps:
+      - uses: actions/checkout@v4
+      - name: 准备隔离配置
+        run: |
+          sudo ip address add "$TEST_SERVER_IP/32" dev lo
+          python3 recipe/prepare.py --server-ip "$TEST_SERVER_IP"
+          sudo chown -R 10001:10001 recipe/shadnet-state recipe/game-state
+          docker compose -f recipe/compose.yaml config --quiet
+      - name: 构建并启动
+        run: |
+          docker compose -f recipe/compose.yaml build
+          docker compose -f recipe/compose.yaml up -d
+      - name: 检查 HTTP、STUN 和登录路由
+        run: python3 scripts/check-linux.py --server-ip "$TEST_SERVER_IP"
+      - name: 停止本轮测试
+        if: always()
+        run: |
+          docker compose -f recipe/compose.yaml logs --tail 60
+          docker compose -f recipe/compose.yaml down
+          sudo ip address del "$TEST_SERVER_IP/32" dev lo
+
+  release:
+    name: 发布版本包
+    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [windows, linux]
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: TheHuntServer-packages
+          path: dist
+      - name: 验证版本并发布
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          test "$RELEASE_TAG" = "v$(cat VERSION)"
+          args=()
+          if [[ "$RELEASE_TAG" == *-* ]]; then args+=(--prerelease); fi
+          gh release create "$RELEASE_TAG" dist/* --verify-tag \
+            --title "TheHuntServer $RELEASE_TAG" \
+            --notes-file "docs/releases/$RELEASE_TAG.md" "${args[@]}"

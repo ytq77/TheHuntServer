@@ -1,0 +1,8 @@
+*
+!Dockerfile
+!entrypoint.sh
+!fixes/
+!fixes/**
+!.build/
+!.build/vendor-source/
+!.build/vendor-source/**

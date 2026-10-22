@@ -1,0 +1,74 @@
+name: the-hunt-bbsc
+services:
+  shadnet:
+    image: the-hunt/shadnet:5a849a1-stun6
+    build: .
+    restart: unless-stopped
+    network_mode: host
+    volumes:
+      - ./shadnet-state:/data
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=32m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 1.0
+    mem_limit: 512m
+    pids_limit: 256
+    healthcheck:
+      test: [CMD, curl, --fail, --silent, --max-time, '3', 'http://${SERVER_IP:?Set SERVER_IP with prepare.py}:31415/status']
+      interval: 30s
+      timeout: 5s
+      start_period: 30s
+      retries: 3
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}
+  gameserver:
+    image: python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258
+    restart: unless-stopped
+    network_mode: host
+    user: '10001:10001'
+    working_dir: /app
+    command:
+      - python
+      - -u
+      - bbsc_gameserver.py
+      - --shadnet
+      - ${SERVER_IP:?Set SERVER_IP with prepare.py}
+      - --shadnet-webapi
+      - http://${SERVER_IP:?Set SERVER_IP with prepare.py}:31415
+      - --host
+      - ${SERVER_IP:?Set SERVER_IP with prepare.py}
+      - --advertise
+      - ${SERVER_IP:?Set SERVER_IP with prepare.py}
+      - --port
+      - '20443'
+      - --relay-port
+      - '20444'
+      - --no-bbhost
+      - --no-playlog
+      - --data
+      - /data/online-data.json
+      - --log-dir
+      - /data/logs
+    volumes:
+      - ./.build/game-app:/app:ro
+      - ./game-state:/data
+    read_only: true
+    tmpfs:
+      - /tmp:rw,nosuid,noexec,size=16m
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    cpus: 0.5
+    mem_limit: 256m
+    pids_limit: 128
+    healthcheck:
+      test: [CMD, python, -c, "import urllib.request; urllib.request.urlopen('http://${SERVER_IP:?Set SERVER_IP with prepare.py}:20443/bb-eu/ss.info', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      start_period: 15s
+      retries: 3
+    logging:
+      driver: json-file
+      options: {max-size: 10m, max-file: '3'}

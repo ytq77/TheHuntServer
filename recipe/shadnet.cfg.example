@@ -1,0 +1,10 @@
+[General]
+Host=__SERVER_IP__
+UnsecuredPort=31413
+MatchingUdpPort=31414
+WebApiPort=31415
+StatsEnabled=false
+Matching2Enabled=true
+BloodborneSeamlessCoop=true
+EmailValidated=false
+RegistrationSecretKey=__REGISTRATION_SECRET__

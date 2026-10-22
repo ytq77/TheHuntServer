@@ -1,0 +1,36 @@
+{
+  "archives": [
+    {
+      "name": "shadnet.tar.gz",
+      "repo": "Wozzardman/shadnet-p2p",
+      "revision": "5a849a192fd4450593c57b10697316ac324c856e",
+      "sha256": "7a24d220f0b4d533bb5ba79fc44eff680358785829568ee954549ab9edce2ed4"
+    },
+    {
+      "name": "protobuf.tar.gz",
+      "repo": "shadexternals/protobuf",
+      "revision": "5917ee224a7e47383a78acc129628511fe210dff",
+      "sha256": "5fbdf3ceceb916380cda90f361de430356750812162ca476786d72515461759b"
+    },
+    {
+      "name": "abseil.tar.gz",
+      "repo": "abseil/abseil-cpp",
+      "revision": "76bb24329e8bf5f39704eb10d21b9a80befa7c81",
+      "sha256": "ed8f7d9f39139c449e79fd19765e23c96fdb774172d32d191323d3e3ea06e5ff"
+    }
+  ],
+  "bbsc": {
+    "repo": "CLSAMG22/BBSC",
+    "revision": "315f76c38b1ca5843b082f93f47927a9193ad94a",
+    "files": {
+      "server/gameserver/bbsc_gameserver.py": "ff2de394c019f358baf4ad949bbdef26e62c27641438413ead75b1aa0d42ab17",
+      "server/gameserver/bbhost_service.py": "532fb0003c7cf4374bccf507930ac9bd5ca19da2d1219f9e81bb74fd9a0e2dd4",
+      "server/gameserver/ss_info_template.xml": "fb9650254eb052c00c4cad0b1224f7bae90282abf6f7fb83c19bf8a2013e19a7",
+      "server/gameserver/LICENSE.NoDreamForHunter": "1440a97a535b731c407d7aefeeb0e0047f81a4397ca441bf8002d8ddb1d1a4d4",
+      "LICENSE": "8177f97513213526df2cf6184d8ff986c675afb514d4e68a404010521b880643",
+      "NOTICE.md": "8ce2b7c8148fc1ea2e1a9da784a44a0704756168aaf0ef80bfca934653f98cf0",
+      "CREDITS.txt": "055cf75b72b00cb5826c8ea333aa9dd6129370ed8429be62706c49e4d725d62f",
+      "SUPPORTERS.txt": "64924b1cf91ed231969bdd5dd0c6da0f15ca990c2bd65959636612f9316491aa"
+    }
+  }
+}
