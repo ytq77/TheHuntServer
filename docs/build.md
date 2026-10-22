@@ -7,7 +7,7 @@
 安装 MSYS2 CLANG64，安装以下包及其依赖：
 
 ```bash
-pacman -S --needed mingw-w64-clang-x86_64-toolchain \
+pacman -S --needed git mingw-w64-clang-x86_64-toolchain \
   mingw-w64-clang-x86_64-cmake mingw-w64-clang-x86_64-ninja \
   mingw-w64-clang-x86_64-python mingw-w64-clang-x86_64-qt6-base \
   mingw-w64-clang-x86_64-qt6-websockets mingw-w64-clang-x86_64-qt6-httpserver
