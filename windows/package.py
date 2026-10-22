@@ -107,4 +107,4 @@ def archive(folder, output):
 
 
 if "--zip" in sys.argv:
-    archive(OUT, OUT.with_suffix(".zip"))
+    archive(OUT, OUT.parent / (OUT.name + ".zip"))
