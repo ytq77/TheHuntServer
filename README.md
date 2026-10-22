@@ -6,9 +6,11 @@ Bloodborne PC 普通联机与 BBSC 无缝联机私服工具。提供 Windows 原
 
 客户端：[TheHuntLauncher](https://github.com/ytq77/TheHuntLauncher)。本仓库不包含游戏、模拟器、角色存档或预置账号。
 
+![Windows 开服管理窗口](docs/assets/windows-server.png)
+
 ## 从这里开始
 
-- **Windows 开服**：下载 [Releases](https://github.com/ytq77/TheHuntServer/releases) 中的 Windows ZIP，解压后双击 `Server.cmd`。完整步骤见 [Windows 教程](docs/windows.md)。无需 Docker、Python 或 Qt。
+- **Windows 开服**：从 [Releases](https://github.com/ytq77/TheHuntServer/releases) 或 [Actions](https://github.com/ytq77/TheHuntServer/actions) 下载 Windows ZIP，解压后双击 `Server.exe`。在窗口中启动服务、管理账号并复制客户端地址。完整步骤见 [Windows 教程](docs/windows.md)。无需 Docker、Python 或 Qt。
 - **Linux 云端部署**：阅读 [组件与端口](docs/components.md)，再按 [部署教程](docs/deployment.md) 从固定源码构建。
 - **编译和自动打包**：见 [构建说明](docs/build.md)。主分支构建产物在 [Actions](https://github.com/ytq77/TheHuntServer/actions)；版本标签通过构建后自动发布 Release。
 - **维护与故障**：[备份升级](docs/operations.md)、[排错](docs/troubleshooting.md)、[客户端管理](docs/client-admin.md)、[验证范围](docs/validation.md)。
@@ -23,7 +25,7 @@ Bloodborne PC 普通联机与 BBSC 无缝联机私服工具。提供 Windows 原
 | BBSC 游戏服务 HTTP / TCP | — | 20443 |
 | BBSC Relay TCP | — | 20444 |
 
-Windows 服务启动后会输出对应客户端字段，直接复制即可。监听地址应为开服电脑自己的局域网或 VPN IPv4；两位玩家使用不同账号。普通版与无缝版数据库独立，创建的账号保存在开服电脑，正常重启不需要重新创建。
+Windows 窗口显示对应客户端字段，可逐项复制或一键复制全部信息。监听地址应为开服电脑自己的局域网或 VPN IPv4；两位玩家使用不同账号。普通版与无缝版数据库独立，创建的账号保存在开服电脑，正常重启不需要重新创建。
 
 Windows 默认仅监听 `127.0.0.1`，配置实际地址后才供其他电脑连接。Linux 配方目前限 Tailscale 地址。局域网或 Tailscale 等虚拟局域网需双向可达，并按端口表放行主机防火墙；工具不自动改防火墙。
 

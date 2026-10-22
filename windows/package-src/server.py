@@ -1,6 +1,7 @@
 """Small native Windows server runner. All state stays beside this file."""
 import argparse
 import configparser
+from contextlib import contextmanager
 import getpass
 import ipaddress
 import json
@@ -16,6 +17,33 @@ import urllib.request
 ROOT = Path(__file__).resolve().parent
 RUNTIME = ROOT / "runtime" / "bin"
 PORTS = {"normal": (31313, 31314, 31315), "bbsc": (31413, 31414, 31415)}
+
+
+@contextmanager
+def mode_lock(mode):
+    """Serialize service lifetime with offline account maintenance in this folder."""
+    import msvcrt
+    if mode not in PORTS:
+        raise ValueError("无效服务模式。")
+    path = ROOT / mode / ".server.lock"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    handle = path.open("a+b")
+    try:
+        if path.stat().st_size == 0:
+            handle.write(b"0")
+            handle.flush()
+        handle.seek(0)
+        try:
+            msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+        except OSError:
+            raise ValueError("此模式正在运行或进行账号维护，请先停止对应服务。") from None
+        try:
+            yield
+        finally:
+            handle.seek(0)
+            msvcrt.locking(handle.fileno(), msvcrt.LK_UNLCK, 1)
+    finally:
+        handle.close()
 
 
 def settings():
@@ -79,7 +107,7 @@ def print_client_settings(mode, address):
         print("\n留言、血迹、幽灵的游戏服务器：保留客户端原有地址。", flush=True)
     choice = 5 if mode == "bbsc" else 4
     print(f"\n联机账号／密码：使用本服务创建的账号；云服账号不会自动同步。\n"
-          f"创建账号：另开 Server.cmd，选择 {choice}。", flush=True)
+          f"创建账号：另开 Server-CLI.cmd，选择 {choice}；也可使用 Server.exe 的账号管理页。", flush=True)
     if ipaddress.IPv4Address(address).is_loopback:
         print("\n当前仅限本机连接。双机测试请先选 3，配置本机的局域网或 Tailscale IPv4 后重新开服。",
               flush=True)
@@ -87,6 +115,11 @@ def print_client_settings(mode, address):
 
 
 def start(mode):
+    with mode_lock(mode):
+        _start(mode)
+
+
+def _start(mode):
     address, _ = profile(mode)
     tcp, udp, web = PORTS[mode]
     for port, kind in ((tcp, socket.SOCK_STREAM), (udp, socket.SOCK_DGRAM),

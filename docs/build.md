@@ -19,7 +19,7 @@ pacman -S --needed git mingw-w64-clang-x86_64-toolchain \
 .\windows\build-native.ps1 -Toolchain C:\msys64\clang64
 ```
 
-脚本依次准备固定源码、编译服务与账号工具、运行上游 CTest、打包运行库、验证中文空格路径下的运行、两个独立数据库、账号持久性、STUN 两种格式、召唤流程、双向 Relay、本机登录地址，最后输出 `windows/dist/TheHuntServer-Windows-v版本.zip`。
+脚本依次准备固定源码、编译服务与账号工具、运行上游 CTest、使用 Windows 自带 .NET Framework 编译并校验 WPF 管理窗口、打包运行库、验证中文空格路径下的运行、两个独立数据库、账号持久性、STUN 两种格式、召唤流程、双向 Relay、本机登录地址，再通过管理管道测试账号增删改、原生 UTF-8 登录、数据库备份和 GUI 进程回收，最后输出 `windows/dist/TheHuntServer-Windows-v版本.zip`。
 
 在同一工具链环境执行 `python scripts/archive-source.py`，生成根目录 `dist` 下的 Windows ZIP、完整固定源码 ZIP、Linux 配方 ZIP 和 SHA256SUMS.txt。源码包只读取 Git 已登记文件和固定清单中的已校验下载，排除账号、私钥、日志和测试状态。
 

@@ -41,6 +41,20 @@ text = cmake.read_text(encoding="utf-8")
 if "add_subdirectory(clientsample)" not in text:
     cmake.write_text(text + "\nadd_subdirectory(clientsample)\n", encoding="utf-8")
 
+# A small upstream-client wrapper accepts UTF-8 credentials on stdin for the GUI.
+shutil.copy2(ROOT / "stdin_account.cpp", ROOT / "src" / "clientsample" / "stdin_account.cpp")
+sample_cmake = ROOT / "src" / "clientsample" / "CMakeLists.txt"
+text = sample_cmake.read_text(encoding="utf-8")
+if "add_executable(shadnet-admin" not in text:
+    sample_cmake.write_text(text + '''
+add_executable(shadnet-admin stdin_account.cpp client.cpp connection.cpp "${PROTO_OUT}/shadnet.pb.cc")
+target_include_directories(shadnet-admin PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}" "${PROTO_OUT}"
+    "${CMAKE_CURRENT_SOURCE_DIR}/../externals/protobuf/src")
+target_link_libraries(shadnet-admin PRIVATE libprotobuf Qt6::Core ws2_32)
+target_compile_definitions(shadnet-admin PRIVATE _WIN32_WINNT=0x0601 WIN32_LEAN_AND_MEAN
+    _CRT_SECURE_NO_WARNINGS NOMINMAX)
+''', encoding="utf-8")
+
 bbsc = manifest["bbsc"]
 for relative, digest in bbsc["files"].items():
     original = ROOT / "downloads" / "bbsc" / relative

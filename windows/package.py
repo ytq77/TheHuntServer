@@ -48,6 +48,8 @@ for mode in ("normal", "bbsc"):
 closure(ROOT / "build" / "shadnet.exe")
 copy(ROOT / "build" / "clientsample" / "shadnet-sample.exe", BIN / "shadnet-sample.exe")
 closure(BIN / "shadnet-sample.exe")
+copy(ROOT / "build" / "clientsample" / "shadnet-admin.exe", BIN / "shadnet-admin.exe")
+closure(BIN / "shadnet-admin.exe")
 copy(PREFIX / "share" / "qt6" / "plugins" / "sqldrivers" / "qsqlite.dll",
      OUT / "runtime" / "plugins" / "sqldrivers" / "qsqlite.dll")
 closure(OUT / "runtime" / "plugins" / "sqldrivers" / "qsqlite.dll")
@@ -69,6 +71,8 @@ for source in (standard / "lib-dynload").glob("*.pyd"):
 shutil.copytree(ROOT / "bbsc-game", OUT / "bbsc-game", dirs_exist_ok=True,
                 ignore=shutil.ignore_patterns("__pycache__"))
 shutil.copytree(ROOT / "package-src", OUT, dirs_exist_ok=True)
+copy(ROOT / "build-ui" / "Server.exe", OUT / "Server.exe")
+copy(ROOT / "build-ui" / "TheHunt.ico", OUT / "TheHunt.ico")
 (OUT / "server.json").write_text('{"address": "127.0.0.1"}\n', encoding="ascii")
 
 licenses = OUT / "licenses"

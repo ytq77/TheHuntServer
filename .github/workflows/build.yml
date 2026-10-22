@@ -51,6 +51,7 @@ jobs:
           path: |
             windows/build/Testing/Temporary/LastTest.log
             windows/smoke-results.json
+            windows/manager-results.json
           retention-days: 7
 
   linux:
