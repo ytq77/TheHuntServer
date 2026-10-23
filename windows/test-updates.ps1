@@ -43,3 +43,23 @@ foreach ($repository in @('TheHuntLauncher','TheHuntServer')) {
     }
 }
 Write-Output 'PASS: version ordering, preview channels, completed Windows assets, repository URL restrictions, Chinese notes and accelerator/proxy validation.'
+
+# Run a real WPF dispatcher with a delayed offline query to verify startup never blocks.
+$case = Join-Path ([IO.Path]::GetTempPath()) ('TheHuntStartupCheck-' + [Guid]::NewGuid().ToString('N'))
+[void][IO.Directory]::CreateDirectory($case)
+$framework = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319'
+$references = @('PresentationCore.dll','PresentationFramework.dll','WindowsBase.dll') | ForEach-Object {
+    '/reference:' + (Join-Path $framework ('WPF\' + $_))
+}
+$references += '/reference:' + (Join-Path $framework 'System.Xaml.dll')
+$references += '/reference:' + [IO.Path]::GetFullPath($AssemblyPath)
+$executable = Join-Path $case 'StartupCheckTest.exe'
+& (Join-Path $framework 'csc.exe') /nologo /target:exe /codepage:65001 $references ('/out:' + $executable) (Join-Path $PSScriptRoot 'startup-check-test.cs')
+if ($LASTEXITCODE) { throw 'Startup update regression compilation failed.' }
+Copy-Item -LiteralPath $AssemblyPath -Destination $case
+$process = Start-Process -FilePath $executable -Wait -PassThru -WindowStyle Hidden -RedirectStandardOutput (Join-Path $case 'stdout.txt') -RedirectStandardError (Join-Path $case 'stderr.txt')
+Get-Content -LiteralPath (Join-Path $case 'stdout.txt')
+if ($process.ExitCode) {
+    Get-Content -LiteralPath (Join-Path $case 'stderr.txt')
+    throw 'Startup update dispatcher regression failed.'
+}

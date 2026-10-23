@@ -148,6 +148,39 @@ public static class HuntUpdates
         catch (WebException) { throw new IOException("直连和加速查询均失败。此加速地址可能只支持下载；可尝试本机 HTTP 代理。"); }
     }
 
+    public static void WatchStartup(Window owner, Button button, string root, string repository, string version) {
+        AssetName(repository, version);
+        WatchStartupCore(owner, button, version, () => {
+            var saved = new Dictionary<string, object>();
+            string path = Path.Combine(root, "update-settings.json");
+            if (File.Exists(path))
+                saved = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(File.ReadAllText(path));
+            bool previews = saved.ContainsKey("previews") ? Convert.ToBoolean(saved["previews"]) : version.Contains("-");
+            string proxy = saved.ContainsKey("http_proxy") ? Convert.ToString(saved["http_proxy"]) : "";
+            string prefix = saved.ContainsKey("download_prefix") ? Convert.ToString(saved["download_prefix"]) : "";
+            return Check(repository, previews, proxy, prefix);
+        });
+    }
+
+    internal static void WatchStartupCore(Window owner, Button button, string version, Func<HuntRelease> query) {
+        EventHandler rendered = null;
+        rendered = async delegate {
+            owner.ContentRendered -= rendered; // A window may render again after hide/show.
+            try {
+                var release = await Task.Run(query);
+                if (!owner.IsVisible) return;
+                if (CompareVersions(release.Version, version) > 0) {
+                    button.Content = "发现新版";
+                    button.BorderBrush = Color("#B9C5CD");
+                    button.ToolTip = "发现新版本 " + release.Version + "，点击查看说明并选择是否更新。";
+                } else button.ToolTip = "启动检查完成，当前频道暂无更新。";
+            } catch {
+                if (owner.IsVisible) button.ToolTip = "启动时未能检查更新，可点击手动重试或设置更新网络。";
+            }
+        };
+        owner.ContentRendered += rendered;
+    }
+
     public static void EnsureNotUpdating(string root) {
         string path = Path.Combine(root, ".update.lock");
         if (!File.Exists(path)) return;

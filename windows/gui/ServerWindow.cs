@@ -71,7 +71,7 @@ internal sealed class DesktopManager
     private DispatcherTimer timer;
     private bool busy, polling, closing;
     private Dictionary<string, object> snapshot;
-    private string currentVersion = "0.1.0-preview.3";
+    private string currentVersion = "0.1.0-preview.4";
     private string Mode { get { return Get<RadioButton>("NormalMode").IsChecked == true ? "normal" : "bbsc"; } }
     private T Get<T>(string name) where T : class { return (T)window.FindName(name); }
     private static bool Flag(Dictionary<string, object> data, string key) { return data.ContainsKey(key) && Convert.ToBoolean(data[key]); }
@@ -294,6 +294,7 @@ internal sealed class DesktopManager
     }
 
     public int Show(Application application, bool test) {
+        if (!test) HuntUpdates.WatchStartup(window, Get<Button>("CheckUpdates"), root, "TheHuntServer", currentVersion);
         if (test) {
             window.WindowStartupLocation = WindowStartupLocation.Manual;
             window.Left = -20000; window.Top = -20000;
