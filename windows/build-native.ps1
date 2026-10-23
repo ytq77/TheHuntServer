@@ -16,6 +16,8 @@ if ($LASTEXITCODE) { throw 'Native build failed.' }
 if ($LASTEXITCODE) { throw 'Upstream tests failed.' }
 & ./build-gui.ps1
 if ($LASTEXITCODE) { throw 'Desktop manager build failed.' }
+& $python ./test_apply_update.py
+if ($LASTEXITCODE) { throw 'Automatic update preservation and rollback checks failed.' }
 & $python ./package.py
 if ($LASTEXITCODE) { throw 'Runtime packaging failed.' }
 & $python ./smoke-test.py

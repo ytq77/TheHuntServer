@@ -71,6 +71,7 @@ internal sealed class DesktopManager
     private DispatcherTimer timer;
     private bool busy, polling, closing;
     private Dictionary<string, object> snapshot;
+    private string currentVersion = "0.1.0-preview.3";
     private string Mode { get { return Get<RadioButton>("NormalMode").IsChecked == true ? "normal" : "bbsc"; } }
     private T Get<T>(string name) where T : class { return (T)window.FindName(name); }
     private static bool Flag(Dictionary<string, object> data, string key) { return data.ContainsKey(key) && Convert.ToBoolean(data[key]); }
@@ -94,7 +95,8 @@ internal sealed class DesktopManager
         string build = Path.Combine(root, "BUILD-INFO.json");
         if (File.Exists(build)) {
             var info = json.Deserialize<Dictionary<string, object>>(File.ReadAllText(build, Encoding.UTF8));
-            Get<TextBlock>("VersionText").Text = "v" + Convert.ToString(info["label"]) + " · Windows x64";
+            currentVersion = Convert.ToString(info["label"]);
+            Get<TextBlock>("VersionText").Text = "v" + currentVersion + " · Windows x64";
         }
         Get<Button>("ChooseAddress").Click += ChooseAddress;
         Get<TextBox>("AddressBox").TextChanged += delegate { UpdateLinks(); };
@@ -110,6 +112,7 @@ internal sealed class DesktopManager
         }
         Get<Button>("CopyAll").Click += delegate { Copy(AllLinks()); };
         Get<Button>("OpenLogs").Click += delegate { OpenFolder(Path.Combine(root, Mode, "logs")); };
+        Get<Button>("CheckUpdates").Click += delegate { HuntUpdates.Show(window, root, "TheHuntServer", currentVersion, () => !busy && !Active("normal") && !Active("bbsc")); };
         Get<Button>("OpenBackups").Click += delegate { OpenFolder(Path.Combine(root, "backups", Mode)); };
         Get<Button>("RefreshAccounts").Click += async delegate { await RefreshAccounts(); };
         Get<DataGrid>("AccountGrid").SelectionChanged += delegate { UpdateState(); };
@@ -416,6 +419,7 @@ internal static class Entry
     [STAThread]
     public static int Main(string[] args) {
         try {
+            if (args.Length == 0) HuntUpdates.EnsureNotUpdating(AppDomain.CurrentDomain.BaseDirectory);
             var application = new Application();
             var manager = new DesktopManager();
             if (args.Length > 0 && args[0] == "--validate") { manager.Validate(args.Length > 1 ? args[1] : null); return 0; }

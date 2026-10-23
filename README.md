@@ -13,6 +13,7 @@ Bloodborne PC 普通联机与 BBSC 无缝联机私服工具。提供 Windows 原
 - **Windows 开服**：从 [Releases](https://github.com/ytq77/TheHuntServer/releases) 或 [Actions](https://github.com/ytq77/TheHuntServer/actions) 下载 Windows ZIP，解压后双击 `Server.exe`。在窗口中启动服务、管理账号并复制客户端地址。完整步骤见 [Windows 教程](docs/windows.md)。无需 Docker、Python 或 Qt。
 - **Linux 云端部署**：阅读 [组件与端口](docs/components.md)，再按 [部署教程](docs/deployment.md) 从固定源码构建。
 - **编译和自动打包**：见 [构建说明](docs/build.md)。主分支构建产物在 [Actions](https://github.com/ytq77/TheHuntServer/actions)；版本标签通过构建后自动发布 Release。
+- **Windows 自动更新**：窗口中的「检查更新」可下载校验并自动替换程序，保留账号库和配置；支持可选 GitHub 加速。见 [更新说明](docs/updates.md)。
 - **维护与故障**：[备份升级](docs/operations.md)、[排错](docs/troubleshooting.md)、[客户端管理](docs/client-admin.md)、[验证范围](docs/validation.md)。
 
 ## 端口与账号

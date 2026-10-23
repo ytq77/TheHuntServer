@@ -19,4 +19,8 @@ dist/
 *.db
 *.sqlite*
 server.json
+update-settings.json
+update-backups/
+.update.lock
+windows/installer-tests/
 shadnet.cfg

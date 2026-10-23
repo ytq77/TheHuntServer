@@ -73,6 +73,7 @@ shutil.copytree(ROOT / "bbsc-game", OUT / "bbsc-game", dirs_exist_ok=True,
 shutil.copytree(ROOT / "package-src", OUT, dirs_exist_ok=True)
 copy(ROOT / "build-ui" / "Server.exe", OUT / "Server.exe")
 copy(ROOT / "build-ui" / "TheHunt.ico", OUT / "TheHunt.ico")
+copy(ROOT.parent / "docs" / "updates.md", OUT / "docs" / "updates.md")
 (OUT / "server.json").write_text('{"address": "127.0.0.1"}\n', encoding="ascii")
 
 licenses = OUT / "licenses"

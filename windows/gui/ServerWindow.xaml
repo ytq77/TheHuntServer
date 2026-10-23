@@ -171,6 +171,7 @@
         <StackPanel><TextBlock x:Name="MessageText" Text="选择服务模式和本机地址，即可开始开服。" TextWrapping="Wrap" Margin="0,0,12,4"/>
           <TextBlock Text="关闭此窗口会停止本窗口启动的服务。" Foreground="#7F8D97" FontSize="11"/></StackPanel>
         <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+          <Button x:Name="CheckUpdates" Content="检查更新" Padding="11,7" Margin="0,0,7,0"/>
           <Button x:Name="OpenLogs" Content="日志" Padding="11,7" Margin="0,0,7,0"/>
           <Button x:Name="OpenBackups" Content="备份" Padding="11,7"/>
         </StackPanel>
