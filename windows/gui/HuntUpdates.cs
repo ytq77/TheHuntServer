@@ -105,6 +105,7 @@ public static class HuntUpdates
     }
 
     private static HttpWebRequest Request(string url, string proxy) {
+        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
         var request = (HttpWebRequest)WebRequest.Create(url);
         request.Timeout = 10000; request.ReadWriteTimeout = 30000;
         request.UserAgent = "TheHunt-UpdateCheck";
@@ -118,7 +119,6 @@ public static class HuntUpdates
                 throw new ArgumentException("HTTP 代理请填写 http(s)://地址:端口，不包含账号密码或路径。");
             request.Proxy = new WebProxy(address);
         }
-        ServicePointManager.SecurityProtocol |= SecurityProtocolType.Tls12;
         return request;
     }
 
