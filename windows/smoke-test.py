@@ -176,6 +176,9 @@ try:
         assert f"<{tag}>http://127.0.0.1:31415</{tag}>" in xml
     assert ":31315" not in xml and "{YOUR SHADNET SERVER}" not in xml
     results["BBSC_ss_info_uses_independent_31415"] = True
+    for tag in ("SummonDataGetListInterval2", "SummonDataCreateInterval2"):
+        assert f"<{tag}>2</{tag}>" in xml, tag
+    results["BBSC_summon_search_and_create_intervals_are_2_seconds"] = True
     with socket.create_connection(("127.0.0.1", 20444), timeout=2) as left, \
          socket.create_connection(("127.0.0.1", 20444), timeout=2) as right:
         # TCP connect can finish before the server has registered both relay clients.

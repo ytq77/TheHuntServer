@@ -48,6 +48,8 @@ services:
       - '20444'
       - --no-bbhost
       - --no-playlog
+      - --summon-interval
+      - '2'
       - --data
       - /data/online-data.json
       - --log-dir

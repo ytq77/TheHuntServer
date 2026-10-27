@@ -74,6 +74,7 @@ shutil.copytree(ROOT / "package-src", OUT, dirs_exist_ok=True)
 copy(ROOT / "build-ui" / "Server.exe", OUT / "Server.exe")
 copy(ROOT / "build-ui" / "TheHunt.ico", OUT / "TheHunt.ico")
 copy(ROOT.parent / "docs" / "updates.md", OUT / "docs" / "updates.md")
+copy(ROOT.parent / "docs" / "summon-polling.md", OUT / "docs" / "summon-polling.md")
 (OUT / "server.json").write_text('{"address": "127.0.0.1"}\n', encoding="ascii")
 
 licenses = OUT / "licenses"
@@ -98,7 +99,8 @@ info = {"label": VERSION, "platform": "Windows x64", "compiler": subprocess.chec
     [str(PREFIX / "bin" / "clang++.exe"), "--version"], text=True).splitlines()[0],
         "qt": subprocess.check_output([str(PREFIX / "bin" / "qmake6.exe"), "-query", "QT_VERSION"], text=True).strip(), "python": sys.version, "files": manifest,
         "patches": ["STUN 4/6 byte framing", "enable shadnet-sample target", "BBSC explicit summon WebAPI",
-                    "same-PC login endpoints use the bound listener address"]}
+                    "same-PC login endpoints use the bound listener address",
+                    "seamless game service uses 2-second summon search/create intervals"]}
 (OUT / "BUILD-INFO.json").write_text(json.dumps(info, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 print(f"Runtime staged: {len(manifest)} files, {sum(p.stat().st_size for p in OUT.rglob('*') if p.is_file()) / 1048576:.1f} MiB")
 

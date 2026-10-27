@@ -29,7 +29,7 @@ with tempfile.TemporaryDirectory(prefix='bbsc-local-login-') as temp:
             sys.executable, '-B', '-u', str(ROOT / 'bbsc-game/bbsc_gameserver.py'),
             '--host', address, '--advertise', address, '--port', str(port), '--relay-port', '0',
             '--shadnet', address, '--shadnet-webapi', f'http://{address}:31415',
-            '--no-bbhost', '--no-playlog', '--log-dir', str(folder), '--data', str(folder / 'data.json')],
+            '--no-bbhost', '--no-playlog', '--summon-interval', '2', '--log-dir', str(folder), '--data', str(folder / 'data.json')],
             env=env, stdin=subprocess.DEVNULL, stdout=log, stderr=subprocess.STDOUT,
             creationflags=subprocess.CREATE_NO_WINDOW)
         try:
@@ -45,6 +45,8 @@ with tempfile.TemporaryDirectory(prefix='bbsc-local-login-') as temp:
             else:
                 raise AssertionError('Isolated game service not ready')
             doc = ET.fromstring('<root>' + xml + '</root>')
+            for tag in ('SummonDataGetListInterval2', 'SummonDataCreateInterval2'):
+                assert [e.text for e in doc.iter(tag)] == ['2'], tag
             login = next(e.text for e in doc.iter() if e.tag == 'api_Login')
             if args.expect_broken:
                 assert login == f'http://127.0.0.1:{port}', login

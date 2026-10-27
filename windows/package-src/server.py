@@ -147,7 +147,8 @@ def _start(mode):
                     str(ROOT / "bbsc-game" / "bbsc_gameserver.py"), "--host", address,
                     "--advertise", address, "--shadnet", address, "--shadnet-webapi",
                     f"http://{address}:{web}", "--port", "20443", "--relay-port", "20444",
-                    "--no-bbhost", "--no-playlog", "--log-dir", str(logs),
+                    "--no-bbhost", "--no-playlog", "--summon-interval", "2",
+                    "--log-dir", str(logs),
                     "--data", str(ROOT / mode / "online-data.json")], "gameserver")
         for _ in range(50):
             if any(process.poll() is not None for process in processes):

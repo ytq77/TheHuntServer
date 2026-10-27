@@ -1,4 +1,4 @@
-param([string]$Toolchain = 'C:\bbsc-dev\msys64\clang64')
+﻿param([string]$Toolchain = 'C:\bbsc-dev\msys64\clang64')
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
 $env:PATH = (Join-Path $Toolchain 'bin') + ';' + $env:PATH
@@ -6,6 +6,8 @@ $env:WIN_SERVER_TOOLCHAIN = $Toolchain
 $env:PYTHONUTF8 = '1'
 $python = Join-Path $Toolchain 'bin\python.exe'
 $cmake = Join-Path $Toolchain 'bin\cmake.exe'
+& $python -B -m unittest discover -s . -p test_summon_poll.py -v
+if ($LASTEXITCODE) { throw 'Seamless-only summon polling checks failed.' }
 & $python ./prepare-sources.py
 if ($LASTEXITCODE) { throw 'Source preparation failed.' }
 & $cmake -S ./src -B ./build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_COMPILER=clang -DCMAKE_CXX_COMPILER=clang++ "-DCMAKE_PREFIX_PATH=$($Toolchain.Replace('\','/'))" -DBUILD_TESTING=ON "-DFETCHCONTENT_SOURCE_DIR_ABSL=$($PSScriptRoot.Replace('\','/'))/src/externals/abseil-cpp" -DFETCHCONTENT_FULLY_DISCONNECTED=ON -DABSL_PROPAGATE_CXX_STD=ON

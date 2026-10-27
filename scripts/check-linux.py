@@ -27,6 +27,8 @@ for _ in range(60):
 else:
     raise AssertionError("Linux services did not become ready")
 doc = ET.fromstring("<root>" + xml + "</root>")
+for tag in ("SummonDataGetListInterval2", "SummonDataCreateInterval2"):
+    assert [e.text for e in doc.iter(tag)] == ["2"], tag
 summons = [e.text for e in doc.iter() if e.tag.startswith("api_SummonData")]
 assert len(summons) == 4 and all(url == f"http://{address}:31415" for url in summons), summons
 login = next(e.text for e in doc.iter() if e.tag == "api_Login")
@@ -46,4 +48,4 @@ for prefix in (bytes.fromhex("ffffffff"), bytes.fromhex("ff83ffffffff")):
         assert reply == prefix + expected, reply.hex()
 with socket.create_connection((address, 20444), timeout=3):
     pass
-print("PASS: Linux status, login, isolated summon routes, STUN 4/6 framing and relay listener")
+print("PASS: Linux status, login, 2-second summon intervals, isolated summon routes, STUN 4/6 framing and relay listener")
